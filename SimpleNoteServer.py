@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 
 """How to use:
 
@@ -37,17 +37,11 @@ else:
 	PORT = 8000
 	I = ""
 
-notes = {
-	"The Flight":"Here is a list of airlines that you can use to get to the island: \n * Delta\n * American",
-	"The City":"The capital is known for its fine dining and white sandy beaches.",
-	"The Island":"The permanent population of the island is 25,492. Many people visit the island in the summer.",
-	"The Food":"Enjoy the island's unique culenary traditions."
-	}
-
 noteList = ""
 noteListDirty = True
 
 def getNoteListCached():
+	"""keeps a copy of the note list html. only building it again when notes are renamed, added, or deleted."""
 	global noteListDirty, noteList
 
 	if noteListDirty:
@@ -121,6 +115,7 @@ def deleteNote(path, args):
 
 	return getNoteListCached()
 
+
 postInternals = {
 	"/newNote":createNote,
 	"/loadNote":loadNote,
@@ -129,7 +124,8 @@ postInternals = {
 	"/deleteNote": deleteNote		 
 				 }
 
-def getPostResoponse(path, args):
+def getPostResponse(path, args):
+	"""Looks to see if the post request corrisponds to an interal handler. Returns the response or None if no handler exists."""
 	if path in postInternals:
 		return postInternals[path](path,args)
 	return None
@@ -140,7 +136,6 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 	verbose = False
 
 	def do_GET(self):
-		
 		SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)
 
 	def do_POST(self):
@@ -156,7 +151,7 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 		for item in form.list:
 			argsDict[item.name] = item.value
 		
-		RESPONSE = getPostResoponse(self.path, argsDict)
+		RESPONSE = getPostResponse(self.path, argsDict)
 		if RESPONSE == None:
 			SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)
 			return
